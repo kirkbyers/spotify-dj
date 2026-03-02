@@ -78,10 +78,7 @@ async fn run() -> Result<()> {
         check_env_vars()?;
     } else {
         // auth and auth-status still need SPOTIFY_CLIENT_ID to build the auth URL.
-        if std::env::var("SPOTIFY_CLIENT_ID")
-            .map(|v| v.is_empty())
-            .unwrap_or(true)
-        {
+        if client::client_id().is_none() {
             return Err(anyhow!(
                 "SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be set."
             ));
@@ -90,7 +87,7 @@ async fn run() -> Result<()> {
 
     match cli.command {
         Commands::Auth => {
-            let client_id = std::env::var("SPOTIFY_CLIENT_ID").unwrap_or_default();
+            let client_id = client::client_id().unwrap_or_default();
             auth::run_auth_flow(&client_id).await?;
         }
 
@@ -137,18 +134,10 @@ async fn run() -> Result<()> {
 }
 
 fn check_env_vars() -> Result<()> {
-    let has_id = std::env::var("SPOTIFY_CLIENT_ID")
-        .map(|v| !v.is_empty())
-        .unwrap_or(false);
-    let has_secret = std::env::var("SPOTIFY_CLIENT_SECRET")
-        .map(|v| !v.is_empty())
-        .unwrap_or(false);
-
-    if !has_id || !has_secret {
+    if client::client_id().is_none() || client::client_secret().is_none() {
         return Err(anyhow!(
             "SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be set."
         ));
     }
-
     Ok(())
 }

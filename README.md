@@ -16,32 +16,19 @@ All output is JSON, so it's easy to parse from shell scripts or Claude hooks.
 
 In your Spotify app settings, add `http://127.0.0.1:8888/callback` as a Redirect URI.
 
-### Build
+### Build & Install
+
+The credentials are baked into the binary at compile time, so you only need to set them once — when you run `cargo install`. After that the binary works anywhere without any environment variables.
 
 ```bash
-cd spotify_dj
-cargo build --release
-```
-
-Or install it directly to your PATH:
-
-```bash
+SPOTIFY_CLIENT_ID="your_client_id_here" \
+SPOTIFY_CLIENT_SECRET="your_client_secret_here" \
 cargo install --path .
 ```
 
-### Environment Variables
+If you need to swap credentials later, just re-run the install command with the new values.
 
-`spotify-dj` reads credentials from two env vars at runtime. Add them to your shell profile (`.zshrc`, `.bashrc`, etc.):
-
-```bash
-export SPOTIFY_CLIENT_ID="your_client_id_here"
-export SPOTIFY_CLIENT_SECRET="your_client_secret_here"
-```
-
-If either is missing, every command will exit with:
-```json
-{"error": "SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be set."}
-```
+You can still override the baked-in credentials at runtime by setting the env vars normally — useful if you're switching between Spotify apps during development.
 
 ### Authenticate
 
