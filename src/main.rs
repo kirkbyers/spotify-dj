@@ -58,6 +58,9 @@ enum Commands {
         #[arg(required = true)]
         uris: Vec<String>,
     },
+
+    /// Show the current playback queue
+    Queue,
 }
 
 #[tokio::main]
@@ -127,6 +130,11 @@ async fn run() -> Result<()> {
         Commands::QueueAdd { uris } => {
             let client = client::build_client().await?;
             commands::queue::queue_add(&client, &uris).await?;
+        }
+
+        Commands::Queue => {
+            let client = client::build_client().await?;
+            commands::queue::queue_get(&client).await?;
         }
     }
 
